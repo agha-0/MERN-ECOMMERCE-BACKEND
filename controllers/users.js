@@ -16,12 +16,12 @@ const signup = async (req, res) => {
     const profile = req.body.profile
 
     if (!username || !full_name || !email || !password || !phone_number) {
-        return res.json({ message: "Fields can't be empty", success: false })
+        return res.json({ message: "Fields can't be empty", success: false, response_code: 201 })
     } else {
         try {
             // Check Existing Email 
             const existingEmail = await userSchema.findOne({ email: email })
-            if (existingEmail) return res.json({ message: "Email already Exists", success: false })
+            if (existingEmail) return res.json({ message: "Email already Exists", success: false, response_code: 201 })
             // Generate Password Hash
             const hashedPassword = await bcrypt.hash(password, 10)
             const result = await userSchema.create({
@@ -34,9 +34,9 @@ const signup = async (req, res) => {
             })
             const token = JWT.sign({ id: result.id }, process.env.JWT_SECRET)
 
-            res.status(201).json({ user: req.body, token: token, success: true })
+            res.status(201).json({ data: req.body, token: token, message: "Successfully Registered!", response_code: 200, success: true })
         } catch (error) {
-            return res.json({ message: error, success: false })
+            return res.json({ message: process.env.ERROR_MESSAGE, success: false, response_code: 201, })
         }
     }
 }
@@ -46,22 +46,22 @@ const login = async (req, res) => {
     const password = req.body.password
     console.log(email, password);
     if (!email || !password) {
-        return res.json({ message: "Fields Can't be null", success: false })
+        return res.json({ message: "Fields Can't be null", success: false, response_code: 201 })
     }
     else {
         try {
             // Check Existing User and Check match password 
             const existingEmail = await userSchema.findOne({ email: email })
-            if (!existingEmail) return res.json({ message: "Invalid Credentials", success: false })
+            if (!existingEmail) return res.json({ message: "Invalid Credentials", success: false, response_code: 201 })
 
             const passwordMatch = await bcrypt.compare(password, existingEmail.password)
-            if (!passwordMatch) return res.json({ message: "Invalid Credentials", success: false })
+            if (!passwordMatch) return res.json({ message: "Invalid Credentials", success: false, response_code: 201 })
 
             // Generate JWT 
             const token = JWT.sign({ id: existingEmail.id }, process.env.JWT_SECRET)
-            res.status(201).send({ user: existingEmail, token: token, success: true })
+            res.status(201).send({ data: existingEmail, token: token, success: true, response_code: 200 })
         } catch (error) {
-            res.json({ message: "Something went Wrong", success: false })
+            res.json({ message: process.env.ERROR_MESSAGE, success: false, response_code: 201 })
         }
     }
 }
@@ -72,18 +72,18 @@ const getUser = async (req, res) => {
     try {
         if (userID) {
             const data = await userSchema.findById(userID)
-            res.status(201).send({ user: data, success: true })
+            res.status(201).send({ data: data, success: true, response_code: 200 })
         } else if (email) {
             const data = await userSchema.find({ email: email })
             if (data.length !== 0)
-                res.status(201).send({ user: data, success: true })
+                res.status(201).send({ data: data, success: true, response_code: 200 })
             else
-                res.status(201).send({ user: data, message: "The email address you entered is not registered, Please try again!", success: false })
+                res.status(201).send({ data: data, message: "The email address you entered is not registered, Please try again!", success: false, response_code: 201 })
         } else {
-            res.status(500).send({ message: "Something went wrong!", success: false })
+            res.status(500).send({ message: process.env.ERROR_MESSAGE, success: false, response_code: 201 })
         }
     } catch (error) {
-        res.status(500).send({ message: "Something went wrong!", success: false })
+        res.status(500).send({ message: process.env.ERROR_MESSAGE, success: false, response_code: 201 })
     }
 }
 
@@ -119,23 +119,23 @@ const updateUser = async (req, res) => {
 
         if (data) {
             user = await userSchema.findByIdAndUpdate(userID, { $set: newUser }, { new: true })
-            res.status(201).send({ user: user, success: true })
+            res.status(201).send({ data: user, success: true, message: "Profile Updated Successfully", response_code: 200 })
         } else {
-            res.status(201).send({ message: "User Not Found" })
+            res.status(201).send({ message: "User Not Found", response_code: 201 })
         }
     } catch (error) {
-        return res.send({ message: error, success: false })
+        return res.send({ message: error, success: false, message: process.env.ERROR_MESSAGE, response_code: 201 })
     }
 }
 
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
-    if (!email) res.status(404).send({ message: "Invalid Username or Email ID", success: false })
+    
+    if (!email) res.status(404).send({ message: "Invalid Username or Email ID", success: false, response_code: 201 })
     else {
         try {
             const filePath = path.join(__dirname, '../mail_templates/ResetPassword.html');
             const source = fs.readFileSync(filePath, 'utf-8').toString();
-
             const template = handlebars.compile(source);
             let code = Math.floor(Math.random() * 900000) + 100000;
             const replacements = { reset_code: code }
@@ -158,12 +158,12 @@ const forgotPassword = async (req, res) => {
                     html: htmlToSend,
                     headers: { 'x-myheader': 'test header' }
                 });
-                res.status(201).send({ code: code, message: "Reset code is sent to your email Address!", success: true })
+                res.status(201).send({ data: { code: code }, message: "Reset code is sent to your email Address!", success: true, response_code: 201 })
             } catch (error) {
-                res.status(404).send({ message: "Error! Please Try Again", success: false })
+                res.status(404).send({ message: process.env.ERROR_MESSAGE, success: false, response_code: 201 })
             }
         } catch (error) {
-            console.log({ message: error.message, success: false })
+            console.log({ message: process.env.ERROR_MESSAGE, success: false, response_code: 201 })
         }
     }
 }

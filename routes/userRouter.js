@@ -6,9 +6,10 @@ const authMiddleware = require('../middleware/auth')
 
 router.route('/signup').post(signup) //Sign up 
 router.route('/login').post(login) //Login 
-router.route('/').post(forgotPassword).get(authMiddleware, getUser) //get Reset Password code and get user with auth middleware
+router.route('/forget-password').post(forgotPassword) //get Reset Password code and get user with auth middleware
+router.route('/get-user').get(authMiddleware, getUser) //get Reset Password code and get user with auth middleware
 router.route('/reset-password/:id').put(updateUser) //reset password with code and user id 
-router.route('/:email').get(getUser) //get user with email address
+router.route('/get-user/:email').get(getUser) //get user with email address
 router.route('/update-user').put(authMiddleware, updateUser) //update user with auth middleware
 
 module.exports = router

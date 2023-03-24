@@ -7,14 +7,14 @@ const userSchema = new mongoose.Schema({
     },
     full_name: {
         type: String,
-        required: [true, "Username Can't be Null"]
+        required: [true, "full_name Can't be Null"]
     },
     email: {
         type: String,
         required: [true, "email Can't be Null"]
     },
     phone_number: {
-        type: Number,
+        type: String,
         required: [true, "mobile Can't be Null"]
     },
     password: {
