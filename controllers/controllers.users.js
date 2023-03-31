@@ -207,6 +207,11 @@ const emailRegistration = async (req, res) => {
                     from: process.env.EMAIL_ID,
                     to: email,
                     subject: "Account Varification Request",
+                    attachments: [{
+                        filename: 'Logo.png',
+                        path: __dirname + '/../mail_templates/Logo.png',
+                        cid: 'logo' //my mistake was putting "cid:logo@cid" here! 
+                    }],
                     html: htmlToSend,
                     headers: { 'x-myheader': 'test header' }
                 });
