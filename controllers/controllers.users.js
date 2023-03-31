@@ -1,6 +1,6 @@
 const JWT = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const userSchema = require('../models/user')
+const userSchema = require('../models/model.user')
 
 const nodemailer = require('nodemailer');
 const handlebars = require("handlebars");
@@ -22,6 +22,8 @@ const signup = async (req, res) => {
             // Check Existing Email 
             const existingEmail = await userSchema.findOne({ email: email })
             if (existingEmail) return res.json({ message: "Email already Exists", success: false, response_code: 201 })
+            let data = req.body
+
             // Generate Password Hash
             const hashedPassword = await bcrypt.hash(password, 10)
             const result = await userSchema.create({
@@ -34,7 +36,10 @@ const signup = async (req, res) => {
             })
             const token = JWT.sign({ id: result.id }, process.env.JWT_SECRET)
 
-            res.status(201).json({ data: req.body, token: token, message: "Successfully Registered!", response_code: 200, success: true })
+            data = { ...data, token: token }
+            console.log(data)
+
+            res.status(201).json({ data: data, message: "Successfully Registered!", response_code: 200, success: true })
         } catch (error) {
             return res.json({ message: process.env.ERROR_MESSAGE, success: false, response_code: 201, })
         }
@@ -51,17 +56,20 @@ const login = async (req, res) => {
     else {
         try {
             // Check Existing User and Check match password 
-            const existingEmail = await userSchema.findOne({ email: email })
+            let existingEmail = await userSchema.findOne({ email: email })
             if (!existingEmail) return res.json({ message: "Invalid Credentials", success: false, response_code: 201 })
-
+            let newEmail = existingEmail;
             const passwordMatch = await bcrypt.compare(password, existingEmail.password)
             if (!passwordMatch) return res.json({ message: "Invalid Credentials", success: false, response_code: 201 })
 
             // Generate JWT 
             const token = JWT.sign({ id: existingEmail.id }, process.env.JWT_SECRET)
-            res.status(201).send({ data: existingEmail, token: token, success: true, response_code: 200 })
+            existingEmail = { ...existingEmail._doc, token: token }
+
+
+            res.status(201).send({ data: existingEmail, success: true, response_code: 200 })
         } catch (error) {
-            res.json({ message: process.env.ERROR_MESSAGE, success: false, response_code: 201 })
+            res.json({ message: error.message, success: false, response_code: 201 })
         }
     }
 }
@@ -95,7 +103,8 @@ const updateUser = async (req, res) => {
     const email = req.body.email
     const phone_number = req.body.phone_number
     const password = req.body.password
-    const profile = req.body.profile
+    const profile = req.file.path
+
 
     let userID;
     if (uID) userID = uID
@@ -124,13 +133,13 @@ const updateUser = async (req, res) => {
             res.status(201).send({ message: "User Not Found", response_code: 201 })
         }
     } catch (error) {
-        return res.send({ message: error, success: false, message: process.env.ERROR_MESSAGE, response_code: 201 })
+        return res.send({ error: error.message, success: false, message: process.env.ERROR_MESSAGE, response_code: 201 })
     }
 }
 
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
-    
+
     if (!email) res.status(404).send({ message: "Invalid Username or Email ID", success: false, response_code: 201 })
     else {
         try {
