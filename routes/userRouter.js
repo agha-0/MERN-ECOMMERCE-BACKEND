@@ -3,7 +3,7 @@ const router = express.Router()
 
 const multer = require('multer');
 
-const { signup, login, getUser, updateUser, forgotPassword } = require('../controllers/controllers.users')
+const { signup, login, getUser, updateUser, forgotPassword, emailRegistration } = require('../controllers/controllers.users')
 const authMiddleware = require('../middleware/auth')
 
 
@@ -41,6 +41,7 @@ router.route('/forget-password').post(forgotPassword) //get Reset Password code 
 router.route('/get-user').get(authMiddleware, getUser) //get Reset Password code and get user with auth middleware
 router.route('/reset-password/:id').put(updateUser) //reset password with code and user id 
 router.route('/get-user/:email').get(getUser) //get user with email address
-router.route('/update-user').put(authMiddleware, upload.single("pic"), updateUser) //update user with auth middleware
+router.route('/update-user').put(authMiddleware, updateUser) //update user with auth middleware
+router.route('/register-email').post(emailRegistration) //update user with auth middleware
 
 module.exports = router

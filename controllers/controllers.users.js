@@ -103,7 +103,7 @@ const updateUser = async (req, res) => {
     const email = req.body.email
     const phone_number = req.body.phone_number
     const password = req.body.password
-    const profile = req.file.path
+    // const profile = process.env.BASE_URL + "/" + req.file.path
 
 
     let userID;
@@ -122,12 +122,15 @@ const updateUser = async (req, res) => {
         if (email) { newUser.email = email }
         if (phone_number) { newUser.phone_number = phone_number }
         if (password) { newUser.password = hashedPassword }
-        if (profile) { newUser.profile = profile }
+        // if (profile) { newUser.profile = profile }
+
+        console.log(newUser)
 
         const data = await userSchema.findById(userID)
 
         if (data) {
             user = await userSchema.findByIdAndUpdate(userID, { $set: newUser }, { new: true })
+
             res.status(201).send({ data: user, success: true, message: "Profile Updated Successfully", response_code: 200 })
         } else {
             res.status(201).send({ message: "User Not Found", response_code: 201 })
@@ -177,6 +180,46 @@ const forgotPassword = async (req, res) => {
     }
 }
 
+const emailRegistration = async (req, res) => {
+    const { email, username } = req.body
+    if (!email || !username) res.status(404).send({ message: "Invalid Username or Email ID", success: false, response_code: 201 })
+    else {
+        try {
+            const filePath = path.join(__dirname, '../mail_templates/Register_User.html');
+            const source = fs.readFileSync(filePath, 'utf-8').toString();
+            const template = handlebars.compile(source);
+            let code = Math.floor(Math.random() * 9000) + 1000;
+            const replacements = { opt_code: code, username: username, }
+
+            const htmlToSend = template(replacements);
+            try {
+                const transporter = nodemailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    service: 'gmail',
+                    port: 587,
+                    secure: true,
+                    auth: {
+                        user: process.env.EMAIL_ID,
+                        pass: process.env.PASSWORD
+                    },
+                });
+                transporter.sendMail({
+                    from: process.env.EMAIL_ID,
+                    to: email,
+                    subject: "Account Varification Request",
+                    html: htmlToSend,
+                    headers: { 'x-myheader': 'test header' }
+                });
+                res.status(201).send({ data: { code: code }, message: "OTP is sent to your email Address!", success: true, response_code: 200 })
+            } catch (error) {
+                res.status(404).send({ message: process.env.ERROR_MESSAGE, success: false, response_code: 201 })
+            }
+        } catch (error) {
+            console.log({ message: process.env.ERROR_MESSAGE, success: false, response_code: 201 })
+        }
+    }
+}
+
 module.exports = {
-    signup, login, getUser, forgotPassword, updateUser,
+    signup, login, getUser, forgotPassword, updateUser, emailRegistration
 }

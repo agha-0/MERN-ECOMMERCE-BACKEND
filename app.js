@@ -16,7 +16,7 @@ app.use(cors())
 const port = process.env.PORT || 5000;
 
 app.use("/auth", userRouter)
-
+app.use('/profile_pic', express.static("profile_pic"))
 
 app.use(bodyParser.json())
 
