@@ -1,6 +1,6 @@
 const JWT = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const userSchema = require('../models/model.user')
+const userSchema = require('../models/user.model')
 
 const nodemailer = require('nodemailer');
 const handlebars = require("handlebars");
@@ -189,7 +189,7 @@ const emailRegistration = async (req, res) => {
             const source = fs.readFileSync(filePath, 'utf-8').toString();
             const template = handlebars.compile(source);
             let code = Math.floor(Math.random() * 9000) + 1000;
-            const replacements = { opt_code: code, username: username, }
+            const replacements = { opt_code: code, username: username, logo: `${process.env.BASE_URL}/profile_pic/Logo.png`, }
 
             const htmlToSend = template(replacements);
             try {
@@ -207,17 +207,17 @@ const emailRegistration = async (req, res) => {
                     from: process.env.EMAIL_ID,
                     to: email,
                     subject: "Account Varification Request",
-                    attachments: [{
-                        filename: 'Logo.png',
-                        path: __dirname + '/../mail_templates/Logo.png',
-                        cid: 'logo' //my mistake was putting "cid:logo@cid" here! 
-                    }],
+                    // attachments: [{
+                    //     filename: 'Logo.png',
+                    //     path: `${process.env.BASE_URL}/profile_pic/Logo.png`,
+                    //     cid: 'logo'
+                    // }],
                     html: htmlToSend,
                     headers: { 'x-myheader': 'test header' }
                 });
-                res.status(201).send({ data: { code: code }, message: "OTP is sent to your email Address!", success: true, response_code: 200 })
+                res.status(201).send({ data: { code: code.toString() }, message: "OTP is sent to your email Address!", success: true, response_code: 200 })
             } catch (error) {
-                res.status(404).send({ message: process.env.ERROR_MESSAGE, success: false, response_code: 201 })
+                res.status(404).send({ message: error.message, success: false, response_code: 201 })
             }
         } catch (error) {
             console.log({ message: process.env.ERROR_MESSAGE, success: false, response_code: 201 })

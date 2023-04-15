@@ -3,7 +3,7 @@ const router = express.Router()
 
 const multer = require('multer');
 
-const { signup, login, getUser, updateUser, forgotPassword, emailRegistration } = require('../controllers/controllers.users')
+const { signup, login, getUser, updateUser, forgotPassword, emailRegistration } = require('../controllers/users.controllers')
 const authMiddleware = require('../middleware/auth')
 
 

@@ -1,0 +1,211 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "AUS Cosmetics",
+      "description": "AUS MOBILE APP",
+      "license": {
+        "name": "MIT",
+        "url": "https://opensource.org/licenses/MIT"
+      }
+    },
+    "host": "localhost:4000",
+    "basePath": "/",
+    "tags": [ 
+      {
+        "name": "Catagory",
+        "description": "catagory API"
+      }
+    ],
+    "schemes": ["http" ],
+    "consumes": ["application/json"],
+    "produces": [ "application/json"],
+    "paths": {
+      "/api/catagory": {
+        "get": {
+          "tags": [
+            "Catagory"
+          ],
+          "summary": "Get all Catagories",
+          "parameters": [
+            {
+              "name": "catagoryName",
+              "in": "query",
+              "required": false,
+              "description": "Catagory Name",
+              "type": "string"
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "required": false,
+              "description": "Page Number",
+              "type": "integer",
+              "default": 1
+            },
+            {
+              "name": "pageSize",
+              "in": "query",
+              "required": false,
+              "description": "Page Size",
+              "type": "integer",
+              "default": 10
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/ServiceResponse"
+              }
+            }
+          }
+        },
+        "post": {
+            "tags": [
+              "Catagory"
+            ],
+            "summary": "Create Catagory API",
+            "parameters": [
+              {
+                "name": "catagoryName",
+                "in": "formData",
+                "description": "Catagory Name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "catagoryDescription",
+                "in": "formData",
+                "description": "Catagory Description",
+                "type": "string"
+              },
+              {
+                "name": "catagoryImage",
+                "in": "formData",
+                "description": "Catagory Image",
+                "type": "file"
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "schema": {
+                  "$ref": "#/definitions/ServiceResponse"
+                }
+              }
+            }
+          }
+        },
+        "/api/catagory/{id}": {
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "description": "Catagory Id",
+                "type": "string"
+              }
+            ],
+            "get": {
+              "tags": [
+                "Catagory"
+              ],
+              "summary": "Catagory Details based on Category Id",
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/ServiceResponse"
+                  }
+                }
+              }
+            },
+            "put": {
+              "tags": [
+                "Catagory"
+              ],
+              "summary": "Update Catagory API",
+              "parameters": [
+                {
+                  "name": "catagoryName",
+                  "in": "formData",
+                  "description": "Catagory Name",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "catagoryDescription",
+                  "in": "formData",
+                  "description": "Catagory Description",
+                  "type": "string"
+                },
+                {
+                  "name": "catagoryImage",
+                  "in": "formData",
+                  "description": "Catagory Image",
+                  "type": "file"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/ServiceResponse"
+                  }
+                }
+              }
+            },
+            "delete": {
+              "tags": [
+                "Catagory"
+              ],
+              "summary": "Delete Catagory API",
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/ServiceResponse"
+                  }
+                }
+              }
+            }
+        }
+          }, 
+          "definitions": {
+            "Catagory": {
+              "required": [
+                "catagoryName",
+                "_id"
+              ],
+              "properties": {
+                "_id": {
+                  "type": "integer",
+                  "uniqueItems": true
+                },
+                "catagoryName": {
+                  "type": "string"
+                },
+                "catagoryDescription": {
+                  "type": "string"
+                },
+                "catagoryImage": {
+                  "type": "string"
+                }
+              }
+            },
+            "ServiceResponse": {
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Category"
+          }
+        }
+      }
+    }
+  }
+} 
