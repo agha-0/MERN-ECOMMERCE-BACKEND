@@ -5,27 +5,27 @@ const bodyParser = require('body-parser');
 require('dotenv').config()
 const swaggerUi = require("swagger-ui-express"), swaggerDocument = require("./uploads/swagger.json");
 
-const errors = require ("./middleware/errors");
+const errors = require("./middleware/errors");
 
 const app = express();
 app.use(express.json({ limit: '100mb', }))
 app.use(express.urlencoded({ limit: '100mb', extended: true }))
 // const connectDB = require('./database/DB.Connect')
-const {MONGO_DB_CONFIG} = require("./config/app.config");
+const { MONGO_DB_CONFIG } = require("./config/app.config");
 
-const userRouter = require('./routes/userRouter')
+const routes = require('./routes/routes')
+app.use("/api", require("./routes/routes"));
 
 app.use(cors())
 const port = process.env.PORT || 5000;
 
-app.use("/auth", userRouter)
+app.use("/auth", routes)
 app.use('/profile_pic', express.static("profile_pic"))
 app.use("/uploads", express.static("uploads"));
-
-app.use("/api", require("./routes/routes"));
-app.use(errors.errorHandler);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+
+app.use(errors.errorHandler);
 app.use(bodyParser.json())
 const dotenv = require("dotenv");
 
@@ -33,20 +33,20 @@ dotenv.config();
 
 mongoose.Promise = global.Promise;
 mongoose.set("strictQuery", false);
-mongoose.connect(MONGO_DB_CONFIG.DB,{
+mongoose.connect(MONGO_DB_CONFIG.DB, {
 
-    useNewUrlParser:true,
-    useUnifiedTopology:true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 
-} )
-.then(
-    ()=>{
-        console.log('database connected successfully to AUS_mobile_app');
-    },
-    (error)=>{
-        console.log('there is error while connecting DB'+error);
-    }
-);
+})
+    .then(
+        () => {
+            console.log('database connected successfully to AUS_mobile_app');
+        },
+        (error) => {
+            console.log('there is error while connecting DB' + error);
+        }
+    );
 
 // const start = async () => {
 //     try {
