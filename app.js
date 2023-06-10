@@ -13,13 +13,13 @@ app.use(express.urlencoded({ limit: '100mb', extended: true }))
 // const connectDB = require('./database/DB.Connect')
 const { MONGO_DB_CONFIG } = require("./config/app.config");
 
-const routes = require('./routes/routes')
+// const routes = require('./routes/routes')
 app.use("/api", require("./routes/routes"));
 
 app.use(cors())
 const port = process.env.PORT || 5000;
 
-app.use("/auth", routes)
+// app.use("/auth", routes)
 app.use('/profile_pic', express.static("profile_pic"))
 app.use("/uploads", express.static("uploads"));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));

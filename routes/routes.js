@@ -8,7 +8,7 @@ const authMiddleware = require('../middleware/auth')
 
 const catagoryController = require("../controllers/catagories.controller");
 const productController = require("../controllers/product.controller");
-const { add_address, get_Address } = require('../controllers/address.controller');
+const { add_address, get_Address, delete_Address, update_Address } = require('../controllers/address.controller');
 
 
 const storage = multer.diskStorage({
@@ -68,5 +68,8 @@ router.delete("/product/:id", productController.delete);
 // Address Routes
 router.route("/add_address").post(authMiddleware, add_address);
 router.route("/get_address").get(authMiddleware, get_Address);
+router.route("/delete_Address/:address_id").delete(authMiddleware, delete_Address);
+router.route("/update_Address/:address_id").put(authMiddleware, update_Address);
+
 
 module.exports = router
