@@ -1,5 +1,6 @@
 import multer from 'multer';
 import fs from 'fs';
+import path from 'path';
 
 // Function to dynamically set the destination path
 const dynamicDestination = (subfolder) => {
@@ -11,8 +12,16 @@ const dynamicDestination = (subfolder) => {
             cb(null, uploadPath);
         },
         filename: (req, file, cb) => {
-            cb(null, `${Date.now()}-${file.originalname}`);
-        }
+            const fileName =
+                path
+                    .basename(file.originalname, path.extname(file.originalname))
+                    .toLowerCase()
+                    .replace(/\s+/g, "-") +
+                "-" +
+                Date.now().toString() +
+                path.extname(file.originalname).toLowerCase();
+            cb(null, fileName);
+        },
     });
 };
 

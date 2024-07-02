@@ -5,13 +5,15 @@ export const ProductController = {
     // Add a new product
     add: async (req, res) => {
         try {
-            // Perform the file uploa
-            const path =
-                req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
+            console.log(req.file,"req.file")
+            // Perform the file upload
+            const path = req.file != undefined ? req.file.path.replace(/\\/g, "/") : "";
             var model = {
                 ...req.body,
+                discounted_price: (req.body.discounted_price || req.body.discounted_price === 0) ? req.body.discounted_price : null,
                 image: path !== "" ? "/" + path : ""
             }
+            console.log(model,"model")
             const product = await ProductService.add(model);
             return res.status(201).json({
                 status: 201,

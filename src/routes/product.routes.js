@@ -11,16 +11,16 @@ const productRouter = express.Router();
 productRouter.post(
     "/",
     //   isAuthenticated,
-    validate(ProductValidation.add),
     upload("products").single("image"),
+    validate(ProductValidation.add),
     ProductController.add
 );
 
 productRouter.put(
     "/:id",
     //   isAuthenticated,
+    // upload("products").single("image"),
     validate(ProductValidation.update),
-    upload("products").single("image"),
     ProductController.update
 );
 
