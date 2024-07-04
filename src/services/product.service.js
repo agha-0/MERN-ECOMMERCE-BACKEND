@@ -5,7 +5,7 @@ export const ProductService = {
     // Add a new product
     add: async (data) => {
         try {
-            const product = await Product.create(data);
+            const product = await Product.create(data).populate('category');
             return product;
         } catch (error) {
             throw error;
