@@ -18,6 +18,17 @@ AppConfig(app);
 // API Routes
 RoutesConfig(app);
 
+// Handle uncaught exceptions and rejections
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err.message);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection:', reason);
+    process.exit(1);
+});
+
 // Database connection
 dbConnection().then(() => {
     // Route Test
