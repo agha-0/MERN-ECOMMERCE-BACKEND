@@ -16,7 +16,6 @@ const productSchema = new Schema({
     },
     slug: {
         type: String,
-        unique: true,
         trim: true
     },
     price: {
@@ -30,6 +29,7 @@ const productSchema = new Schema({
     },
     image: {
         type: String,
+        required: true,
         trim: true
     },
     quantity: {
@@ -54,27 +54,34 @@ const productSchema = new Schema({
 // Pre-save hook to generate unique slug based on product name
 productSchema.pre('save', async function (next) {
     try {
-        // If slug is not provided or name has changed
         if (!this.slug || this.isModified('name')) {
-            let slug = slugify(this.name, { lower: true });
+            let baseSlug = slugify(this.name, { lower: true });
 
-            // Check if the slug already exists in the database
-            let slugExists = await this.constructor.findOne({ slug });
-            let suffix = 1;
+            // Check if the base slug already exists
+            const slugExists = await this.constructor.findOne({ slug: baseSlug });
 
-            // Generate a unique slug by appending a suffix if needed
-            while (slugExists) {
-                slug = `${slug}-${suffix}`;
-                slugExists = await this.constructor.findOne({ slug });
-                suffix++;
+            if (slugExists) {
+                // If base slug already exists, generate a unique suffix
+                let suffix = 1;
+                let newSlug = `${baseSlug}-${suffix}`;
+
+                // Check if the newly generated slug with suffix exists
+                while (await this.constructor.findOne({ slug: newSlug })) {
+                    suffix++;
+                    newSlug = `${baseSlug}-${suffix}`;
+                }
+
+                // Set the unique slug
+                this.slug = newSlug;
+            } else {
+                // If base slug doesn't exist, use it directly
+                this.slug = baseSlug;
             }
-
-            // Set the slug field
-            this.slug = slug;
         }
 
         next();
     } catch (error) {
+        console.error('Error saving product:', error); // Log any errors
         next(error);
     }
 });

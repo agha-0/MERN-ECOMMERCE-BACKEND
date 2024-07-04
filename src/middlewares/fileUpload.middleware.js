@@ -5,12 +5,12 @@ import path from 'path';
 // Function to dynamically set the destination path
 const dynamicDestination = (subfolder) => {
     return multer.diskStorage({
-        destination: (req, file, cb) => {
-            const uploadPath = `uploads/${subfolder}`;
-            // Check if the directory exists, create it if not
-            fs.mkdirSync(uploadPath, { recursive: true }); // recursive: true creates nested directories if they don't exist
-            cb(null, uploadPath);
-        },
+        // destination: (req, file, cb) => {
+        //     const uploadPath = `uploads/${subfolder}`;
+        //     // Check if the directory exists, create it if not
+        //     fs.mkdirSync(uploadPath, { recursive: true }); // recursive: true creates nested directories if they don't exist
+        //     cb(null, uploadPath);
+        // },
         filename: (req, file, cb) => {
             const fileName =
                 path

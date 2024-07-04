@@ -3,20 +3,24 @@ import Joi from "joi";
 export const ProductValidation = {
   add: {
     body: Joi.object().keys({
-      category: Joi.string().required(), // Assuming category is a string ID here
+      category: Joi.string().required(),
       name: Joi.string().required(),
       price: Joi.number().required(),
       discountedPrice: Joi.number(),
       quantity: Joi.number().integer().min(1).required(),
       description: Joi.string().required(),
+      image: Joi.any().required()
     }),
-    // files: Joi.object().keys({
-    //     image: Joi.any().required().label('image'),
-    // })
   },
   getBySlug: {
     params: Joi.object().keys({
       slug: Joi.string().required(),
+    }),
+  },
+  getAll: {
+    params: Joi.object().keys({
+      slug: Joi.string(),
+      page: Joi.number(),
     }),
   },
   update: {
@@ -24,19 +28,18 @@ export const ProductValidation = {
       slug: Joi.string().required(),
     }),
     body: Joi.object().keys({
-      category: Joi.string(),
-      name: Joi.string(),
-      slug: Joi.string(),
-      price: Joi.number(),
+      category: Joi.string().required(),
+      name: Joi.string().required(),
+      price: Joi.number().required(),
       discountedPrice: Joi.number(),
-      image: Joi.string(),
-      quantity: Joi.number().integer().min(0),
-      description: Joi.string(),
-    }).min(1), // Ensure at least one field is provided for update
+      quantity: Joi.number().integer(),
+      description: Joi.string().required(),
+      image: Joi.any().required()
+    }),
   },
   delete: {
     params: Joi.object().keys({
-      slug: Joi.string().required(),
+      id: Joi.string().required(),
     }),
   },
 };

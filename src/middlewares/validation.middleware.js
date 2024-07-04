@@ -1,7 +1,6 @@
 import Joi from "joi";
 
 export const validate = (schema) => (req, res, next) => {
-  console.log(req?.body)
   const validSchema = pick(schema, ["params", "query", "body"]);
   const object = pick(req, Object.keys(validSchema));
   const { value, error } = Joi.compile(validSchema)

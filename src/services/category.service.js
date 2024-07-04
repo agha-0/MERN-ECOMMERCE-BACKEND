@@ -1,6 +1,9 @@
 // services/categoryService.js
 
+import mongoose from 'mongoose';
 import Category from '../models/category.model.js'; // Adjust the path if necessary
+
+const ObjectId = mongoose.Types.ObjectId;
 
 export const CategoryService = {
     add: async (data) => {
@@ -31,10 +34,15 @@ export const CategoryService = {
     // Get category by ID
     getById: async (id) => {
         try {
+            // Validate if the id is a valid ObjectId
+            if (!ObjectId.isValid(id)) {
+                throw new Error("Category not found.");
+            }
             const category = await Category.findById(id);
             if (!category) throw new Error("Category not found.");
             return category;
         } catch (error) {
+            console.log(error,"errorF")
             throw error;
         }
     },
