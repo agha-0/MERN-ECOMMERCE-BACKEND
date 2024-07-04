@@ -6,7 +6,7 @@ export const ProductService = {
     add: async (data) => {
         try {
             const product = await Product.create(data);
-            const populatedProduct = await Product.findById(product._id).populate('category'); 
+            const populatedProduct = await Product.findById(product._id).populate('category');
             return populatedProduct;
         } catch (error) {
             throw error;
@@ -16,11 +16,18 @@ export const ProductService = {
     // Get all products
     getAll: async ({ skip, limit }) => {
         try {
-            const products = await Product.find()
-                .populate('category')
-                .skip(skip)
-                .limit(limit)
-                .exec();
+            let products
+            if (skip) {
+                products = await Product.find()
+                    .populate('category')
+                    .skip(skip)
+                    .limit(limit)
+                    .exec();
+            } else {
+                products = await Product.find()
+                    .populate('category')
+                    .exec();
+            }
             return products;
         } catch (error) {
             throw error;
