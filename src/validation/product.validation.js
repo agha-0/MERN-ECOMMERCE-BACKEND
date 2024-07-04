@@ -6,7 +6,7 @@ export const ProductValidation = {
       category: Joi.string().required(),
       name: Joi.string().required(),
       price: Joi.number().required(),
-      discountedPrice: Joi.number(),
+      discounted_price: Joi.number(),
       quantity: Joi.number().integer().min(1).required(),
       description: Joi.string().required(),
       image: Joi.any().required()
@@ -31,7 +31,7 @@ export const ProductValidation = {
       category: Joi.string().required(),
       name: Joi.string().required(),
       price: Joi.number().required(),
-      discountedPrice: Joi.number(),
+      discounted_price: Joi.number(),
       quantity: Joi.number().integer(),
       description: Joi.string().required(),
       image: Joi.any().required()

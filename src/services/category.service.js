@@ -42,7 +42,6 @@ export const CategoryService = {
             if (!category) throw new Error("Category not found.");
             return category;
         } catch (error) {
-            console.log(error,"errorF")
             throw error;
         }
     },

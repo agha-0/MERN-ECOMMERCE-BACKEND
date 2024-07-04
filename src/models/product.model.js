@@ -23,7 +23,7 @@ const productSchema = new Schema({
         required: true,
         min: 0
     },
-    discountedPrice: {
+    discounted_price: {
         type: Number,
         min: 0
     },
@@ -81,7 +81,6 @@ productSchema.pre('save', async function (next) {
 
         next();
     } catch (error) {
-        console.error('Error saving product:', error); // Log any errors
         next(error);
     }
 });
