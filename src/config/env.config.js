@@ -8,8 +8,8 @@ export const env = {
 
     //Database
     DB_NAME: "ecommerce",
-    DB_USERNAME: "", // Leave empty if not using authentication
-    DB_PASSWORD: "", // Leave empty if not using authentication
+    DB_USERNAME: "Furnitea", // Leave empty if not using authentication
+    DB_PASSWORD: "XYC1HESyquqAlmI0", // Leave empty if not using authentication
     DB_HOST: "127.0.0.1", // Assuming you are running MongoDB locally
     DB_PORT: 27017, // Default MongoDB port
 

@@ -3,7 +3,8 @@
 import mongoose from "mongoose";
 import { env } from "./env.config.js";
 
-const dbUri = `mongodb://${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}`;
+// const dbUri = `mongodb://${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}`;
+const dbUri = 'mongodb+srv://Furnitea:XYC1HESyquqAlmI0@furnitea.p5dyaym.mongodb.net/?retryWrites=true&w=majority&appName=Furnitea'
 
 mongoose.set('strictQuery', false); // Optional: Configure Mongoose settings if necessary
 
