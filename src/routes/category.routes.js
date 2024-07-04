@@ -9,7 +9,7 @@ const categoryRouter = express.Router();
 categoryRouter.post(
   "/",
   //   isAuthenticated,
-  validate(CategoryValidation.add),
+  // validate(CategoryValidation.add),
   CategoryController.add
 );
 
