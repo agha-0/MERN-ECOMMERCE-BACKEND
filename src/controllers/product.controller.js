@@ -45,15 +45,14 @@ export const ProductController = {
         paginate(ProductModel), // Use the pagination middleware
         async (req, res) => {
             try {
-                const { page, limit } = req.pagination;
-
                 let products = []
-                if(page){
-                     products = await ProductService.getAll({
-                        skip: (page - 1) * limit, // Skip items based on current page
+                if (req.pagination) {
+                    const { currentPage, limit } = req.pagination;
+                    products = await ProductService.getAllWithPagination({
+                        skip: (currentPage - 1) * limit, // Skip items based on current page
                         limit, // Limit number of items per page
                     });
-                }else{
+                } else {
                     products = await ProductService.getAll();
                 }
 

@@ -13,21 +13,27 @@ export const ProductService = {
         }
     },
 
-    // Get all products
-    getAll: async ({ skip, limit }) => {
+    // Get all products with pagination
+    getAllWithPagination: async ({ skip, limit }) => {
         try {
-            let products
-            if (skip) {
-                products = await Product.find()
-                    .populate('category')
-                    .skip(skip)
-                    .limit(limit)
-                    .exec();
-            } else {
-                products = await Product.find()
-                    .populate('category')
-                    .exec();
-            }
+            let products = await Product.find()
+                .populate('category')
+                .skip(skip)
+                .limit(limit)
+                .exec();
+            return products;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+
+    // Get all products
+    getAll: async () => {
+        try {
+            let products = await Product.find()
+                .populate('category')
+                .exec();
             return products;
         } catch (error) {
             throw error;
