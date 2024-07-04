@@ -6,8 +6,8 @@ export const ProductService = {
     add: async (data) => {
         try {
             const product = await Product.create(data);
-            await product.populate('category').execPopulate();
-            return product;
+            const populatedProduct = await Product.findById(product._id).populate('category'); 
+            return populatedProduct;
         } catch (error) {
             throw error;
         }
