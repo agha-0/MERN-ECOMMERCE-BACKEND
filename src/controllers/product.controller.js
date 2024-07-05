@@ -45,23 +45,36 @@ export const ProductController = {
         paginate(ProductModel), // Use the pagination middleware
         async (req, res) => {
             try {
-                let products = []
-                if (req.pagination) {
-                    const { currentPage, limit } = req.pagination;
-                    products = await ProductService.getAllWithPagination({
-                        skip: (currentPage - 1) * limit, // Skip items based on current page
-                        limit, // Limit number of items per page
-                    });
-                } else {
-                    products = await ProductService.getAll();
+                const sortParam = req.query.sort || null;
+                const searchText = req.query.search_text || null;
+                let sortOrder = null;
+
+                if (sortParam) {
+                    sortOrder = sortParam;
                 }
 
+                const limit = req.query.page ? req.pagination.limit : null;
+                const skip = req.query.page ? req.pagination.currentPage ? (req.pagination.currentPage - 1) * limit : null : null;
+
+                // Fetch products with optional pagination, sorting, and search
+                let { products, total } = await ProductService.getAllProducts({
+                    skip: skip,
+                    limit: limit,
+                    sort: sortOrder,
+                    search_text: searchText // Pass the search text
+                });
+
                 if (!products || products.length === 0) {
-                    return res.status(404).json({
-                        status: 404,
+                    return res.status(200).json({
+                        status: 200,
+                        data: [],
                         message: "No products found",
                     });
                 }
+
+                // Update pagination data
+                req.pagination.totalItems = total;
+                req.pagination.totalPages = Math.ceil(total / limit);
 
                 return res.status(200).json({
                     status: 200,
@@ -76,26 +89,6 @@ export const ProductController = {
             }
         },
     ],
-    // getAll: async (req, res) => {
-    //     try {
-    //         const products = await ProductService.getAll();
-    //         if (!products || products.length === 0) {
-    //             return res.status(404).json({
-    //                 status: 404,
-    //                 message: "No products found",
-    //             });
-    //         }
-    //         return res.status(200).json({
-    //             status: 200,
-    //             data: products,
-    //         });
-    //     } catch (error) {
-    //         return res.status(400).json({
-    //             status: 400,
-    //             message: error.message,
-    //         });
-    //     }
-    // },
 
     // Get a product by slug
     getBySlug: async (req, res) => {

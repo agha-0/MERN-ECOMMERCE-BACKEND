@@ -13,32 +13,69 @@ export const ProductService = {
         }
     },
 
-    // Get all products with pagination
-    getAllWithPagination: async ({ skip, limit }) => {
+    // Get all products with pagination, sorting, and text search
+    getAllProducts: async ({ skip, limit, sort, search_text }) => {
         try {
-            let products = await Product.find()
-                .populate('category')
-                .skip(skip)
-                .limit(limit)
-                .exec();
-            return products;
+            let pipeline = [];
+
+            // Add text search if search_text is provided
+            if (search_text) {
+                pipeline.push({
+                    $match: {
+                        $or: [
+                            { name: { $regex: search_text, $options: 'i' } },
+                            // { description: { $regex: search_text, $options: 'i' } }
+                        ]
+                    }
+                });
+            }
+
+            // Count filtered results
+            pipeline.push({
+                $facet: {
+                    metadata: [{ $count: "total" }],
+                    data: [
+                        {
+                            $addFields: {
+                                effective_price: {
+                                    $cond: {
+                                        if: { $gt: ["$discounted_price", 0] },
+                                        then: "$discounted_price",
+                                        else: "$price"
+                                    }
+                                }
+                            }
+                        },
+                        ...(sort ? [{ $sort: { effective_price: sort === 'asc' ? 1 : -1 } }] : []),
+                        ...(typeof skip === 'number' ? [{ $skip: skip }] : []),
+                        ...(typeof limit === 'number' ? [{ $limit: limit }] : []),
+                        {
+                            $lookup: {
+                                from: 'categories',
+                                localField: 'category',
+                                foreignField: '_id',
+                                as: 'category'
+                            }
+                        },
+                        { $unwind: '$category' }
+                    ]
+                }
+            });
+
+            // Execute the aggregation pipeline
+            let result = await Product.aggregate(pipeline).exec();
+
+            // Extract results and count
+            const products = result[0].data;
+            const total = result[0].metadata[0] ? result[0].metadata[0].total : 0;
+
+            return { products, total };
         } catch (error) {
             throw error;
         }
     },
 
 
-    // Get all products
-    getAll: async () => {
-        try {
-            let products = await Product.find()
-                .populate('category')
-                .exec();
-            return products;
-        } catch (error) {
-            throw error;
-        }
-    },
 
     // Get product by slug
     getBySlug: async (slug) => {
