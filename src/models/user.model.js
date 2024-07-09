@@ -1,30 +1,18 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
-const userSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: [true, "Username Can't be Null"]
-    },
-    full_name: {
-        type: String,
-        required: [true, "full_name Can't be Null"]
-    },
-    email: {
-        type: String,
-        required: [true, "email Can't be Null"]
-    },
-    phone_number: {
-        type: String,
-        required: [true, "mobile Can't be Null"]
-    },
-    password: {
-        type: String,
-        required: [true, "password Can't be Null"]
-    },
-    profile: {
-        type: String,
-    }
-})
+const { Schema } = mongoose;
+
+const userSchema = new Schema({
+    first_name: { type: String, required: true },
+    last_name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    isVerified: { type: Boolean, default: false },
+    otp: String,
+    otpExpires: Date,
+    resetPasswordOtp: String,
+    resetPasswordOtpExpires: Date,
+});
 
 
 const UserModel = mongoose.model('User', userSchema);
