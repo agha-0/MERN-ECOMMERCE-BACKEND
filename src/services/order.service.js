@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import Order from '../models/order.model.js';
 import Cart from '../models/cart.model.js';
+import Product from '../models/product.model.js';
 import sendEmail from '../services/email.service.js';
 
 const stripe = new Stripe('sk_test_51PbH3CRu6kZztMnCfbNwsYpr75ZbKFfDR5QdyKUDGMW7MAihIYHFzXEh9HJtD7cJ1OdhJg9LokhYZcQ1UTj6c6ZP00YV7tZUiv');
@@ -51,15 +52,17 @@ export const OrderService = {
             paymentSessionId: sessionId,
         };
 
+        // Save order
         const order = new Order(orderData);
         await order.save();
 
+        // Send email confirmation
         let html = `
         <h1>Order Confirmation</h1>
         <p>Thank you for your order!</p>
         <p>Here are your order details:</p>
         <ul>
-            ${order.items.map(item => `<li>${item.product.name} - ${item.totalPrice}</li>`).join('')}
+            ${order.items.map(item => `<li>${item.product.name} - ${item.quantity} x ${item.product.price} = ${item.totalPrice}</li>`).join('')}
         </ul>
         <p>Subtotal: ${order.total}</p>
         <p>Billing Address: ${order.billingInfo.address}, ${order.billingInfo.city}, ${order.billingInfo.state}, ${order.billingInfo.country}</p>
@@ -67,6 +70,16 @@ export const OrderService = {
     `;
 
         await sendEmail(session.customer_details.email, "Order Confirmation", html);
+
+        // Reduce product quantities
+        for (const item of order.items) {
+            const product = await Product.findById(item.product._id);
+            if (!product) {
+                throw new Error(`Product not found: ${item.product._id}`);
+            }
+            product.quantity -= item.quantity;
+            await product.save();
+        }
 
         // Empty the cart
         cart.items = [];
