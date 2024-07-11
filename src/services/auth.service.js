@@ -124,7 +124,10 @@ export const AuthService = {
         // Check if the cart with the given guest_id exists
         const cart = await Cart.findOne({ guestId: guest_id });
 
-        if (cart) {
+        // Check if the cart with the given safeUserData._id exists
+        const userCart = await Cart.findOne({ userId: safeUserData._id });
+
+        if (cart && !userCart) {
             // Update the cart: set guest_id to null and associate with user_id
             cart.guestId = null;
             cart.userId = safeUserData._id;
