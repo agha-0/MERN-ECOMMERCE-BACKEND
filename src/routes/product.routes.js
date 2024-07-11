@@ -1,6 +1,4 @@
 import express from "express";
-
-// import { isAuthenticated } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validation.middleware.js";
 import { ProductValidation } from "../validation/product.validation.js";
 import { ProductController } from "../controllers/product.controller.js";
@@ -12,7 +10,6 @@ const productRouter = express.Router();
 
 productRouter.post(
     "/",
-    //   isAuthenticated,
     upload("products").single("image"),
     validateRequest,
     validate(ProductValidation.add),
@@ -24,7 +21,6 @@ productRouter.post(
 
 productRouter.patch(
     "/:slug",
-    //   isAuthenticated,
     upload("products").single("image"),
     validateRequest,
     validate(ProductValidation.update),
@@ -40,21 +36,18 @@ productRouter.patch(
 
 productRouter.get(
     "/",
-    //   isAuthenticated,
     validate(ProductValidation.getAll),
     ProductController.getAll
 );
 
 productRouter.get(
     "/:slug",
-    //   isAuthenticated,
-    validate(ProductValidation.slug),
+    validate(ProductValidation.getBySlug),
     ProductController.getBySlug
 );
 
 productRouter.delete(
     "/:id",
-    // isAuthenticated,
     validate(ProductValidation.delete),
     ProductController.delete
 );

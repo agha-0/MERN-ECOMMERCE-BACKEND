@@ -17,6 +17,7 @@ export const AuthValidation = {
     login: Joi.object({
         email: Joi.string().email().required(),
         password: Joi.string().required(),
+        guest_id: Joi.string().required(),
     }),
 
     forgotPassword: Joi.object({

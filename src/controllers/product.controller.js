@@ -93,14 +93,6 @@ export const ProductController = {
     // Get a product by slug
     getBySlug: async (req, res) => {
         try {
-            const validationResult = ProductValidation.getBySlug.validate(req.params);
-            if (validationResult.error) {
-                return res.status(400).json({
-                    status: 400,
-                    message: validationResult.error.details[0].message,
-                });
-            }
-
             const product = await ProductService.getBySlug(req.params.slug);
             if (!product) {
                 return res.status(404).json({
@@ -108,9 +100,16 @@ export const ProductController = {
                     message: "Product not found",
                 });
             }
+
+            // Fetch related products
+            const relatedProducts = await ProductService.getRelatedProducts(product.category._id, product._id);
+
             return res.status(200).json({
                 status: 200,
-                data: product,
+                data: {
+                    product,
+                    relatedProducts,
+                },
             });
         } catch (error) {
             return res.status(400).json({

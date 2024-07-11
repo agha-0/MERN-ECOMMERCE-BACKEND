@@ -19,9 +19,9 @@ export const AuthController = {
 
     verifyOTP: async (req, res) => {
         try {
-            const { email, otp } = req.body;
-            const { user, token } = await AuthService.verifyOTP(email, otp);
-            
+            const { email, otp, guest_id } = req.body;
+            const { user, token } = await AuthService.verifyOTP(email, otp, guest_id);
+
             return res.status(200).json({
                 status: 200,
                 message: 'Email verified successfully',
@@ -37,8 +37,8 @@ export const AuthController = {
 
     login: async (req, res) => {
         try {
-            const { email, password } = req.body;
-            const { token, user } = await AuthService.login(email, password);
+            const { email, password, guest_id } = req.body;
+            const { token, user } = await AuthService.login(email, password, guest_id);
             return res.status(200).json({
                 status: 200,
                 message: 'Login successful',

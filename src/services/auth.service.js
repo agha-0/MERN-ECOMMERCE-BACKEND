@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';
 import generateOTP from '../utils/generateOTP.js';
 import sendEmail from './email.service.js';
+import Cart from '../models/cart.model.js';
 
 export const AuthService = {
     signup: async (data) => {
@@ -54,7 +55,7 @@ export const AuthService = {
         return user;
     },
 
-    verifyOTP: async (email, otp) => {
+    verifyOTP: async (email, otp, guest_id) => {
         const user = await User.findOne({ email });
 
         if (!user) {
@@ -83,11 +84,21 @@ export const AuthService = {
         // Exclude the password and potentially other sensitive fields from the response
         const { password, ...safeUserData } = user.toObject ? user.toObject() : user;
 
+        // Check if the cart with the given guest_id exists
+        const cart = await Cart.findOne({ guestId: guest_id });
+
+        if (cart) {
+            // Update the cart: set guest_id to null and associate with user_id
+            cart.guestId = null;
+            cart.userId = safeUserData._id;
+            await cart.save();
+        }
+
         // Return the token along with the user data, minus the password
         return { user: safeUserData, token };
     },
 
-    login: async (email, password) => {
+    login: async (email, password, guest_id) => {
         const user = await User.findOne({ email });
 
         if (!user) {
@@ -109,6 +120,16 @@ export const AuthService = {
 
         // Exclude the password and potentially other sensitive fields from the response
         const { password: storedPassword, ...safeUserData } = user.toObject ? user.toObject() : user;
+
+        // Check if the cart with the given guest_id exists
+        const cart = await Cart.findOne({ guestId: guest_id });
+
+        if (cart) {
+            // Update the cart: set guest_id to null and associate with user_id
+            cart.guestId = null;
+            cart.userId = safeUserData._id;
+            await cart.save();
+        }
 
         // Return the token along with the user data, minus the password
         return { token, user: safeUserData };

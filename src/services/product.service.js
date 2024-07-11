@@ -119,5 +119,21 @@ export const ProductService = {
         } catch (error) {
             throw error;
         }
-    }
+    },
+
+    // get maximum 4 related products
+    getRelatedProducts: async (categoryId, excludeProductId, limit = 4) => {
+        try {
+            const products = await Product.find({
+                category: categoryId,
+                _id: { $ne: excludeProductId }
+            })
+                .limit(limit)
+                .populate('category');
+
+            return products;
+        } catch (error) {
+            throw error;
+        }
+    },
 };
